@@ -9,6 +9,7 @@
     "predev": "convex dev --until-success && convex dashboard",
     "build": "next build",
     "start": "next start",
+    "test": "jest",
     "lint": "tsc && next lint"
   },
   "dependencies": {

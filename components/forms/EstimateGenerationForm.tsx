@@ -20,7 +20,7 @@ const estimateSchema = z.object({
 
 type EstimateFormData = z.infer<typeof estimateSchema>;
 
-export function EstimateForm({ tenantId }: { tenantId: string }) {
+export function EstimateForm({ tenantId }: Readonly<{ tenantId: string }>) {
     const { control, handleSubmit, formState: { errors } } = useForm<EstimateFormData>({
         resolver: zodResolver(estimateSchema),
         defaultValues: {
