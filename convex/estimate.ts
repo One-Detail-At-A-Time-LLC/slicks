@@ -1,39 +1,35 @@
-// File: convex/estimate.ts
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 
 export const generate = mutation({
     args: {
         tenantId: v.id('tenants'),
-        clientName: v.string(),
-        vehicleMake: v.string(),
-        vehicleModel: v.string(),
-        vehicleYear: v.number(),
-        vehicleSize: v.union(v.literal('small'), v.literal('medium'), v.literal('large')),
+        clientId: v.id('clients'),
+        vehicleId: v.id('vehicles'),
         services: v.array(v.string()),
     },
     handler: async (ctx, args) => {
         const tenant = await ctx.db.get(args.tenantId);
         if (!tenant) throw new Error('Tenant not found');
 
+        const vehicle = await ctx.db.get(args.vehicleId);
+        if (!vehicle) throw new Error('Vehicle not found');
+
         let totalPrice = 0;
         for (const service of args.services) {
             const pricing = tenant.pricingStructure.find(p => p.serviceName === service);
             if (pricing) {
-                totalPrice += pricing.basePrice * pricing.sizeMultiplier[args.vehicleSize];
+                totalPrice += pricing.basePrice * pricing.sizeMultiplier[vehicle.size];
             }
         }
 
         const estimate = {
             tenantId: args.tenantId,
-            clientName: args.clientName,
-            vehicleMake: args.vehicleMake,
-            vehicleModel: args.vehicleModel,
-            vehicleYear: args.vehicleYear,
-            vehicleSize: args.vehicleSize,
+            clientId: args.clientId,
+            vehicleId: args.vehicleId,
             services: args.services,
             totalPrice,
-            status: 'pending',
+            status: 'pending' as const,
             createdAt: Date.now(),
         };
 

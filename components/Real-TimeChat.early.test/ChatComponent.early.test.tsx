@@ -1,10 +1,11 @@
 // Unit tests for: ChatComponent
 
-import { useMutation, useQuery } from "convex/react";
-
+import React from "react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { ChatComponent } from "../Real-TimeChat";
 
-// Mocking dependencies
+import { useMutation, useQuery } from "convex/react";
+
 jest.mock("convex/react", () => ({
   useQuery: jest.fn(),
   useMutation: jest.fn(),
@@ -19,105 +20,98 @@ jest.mock("../../convex/_generated/api", () => ({
   },
 }));
 
-describe("ChatComponent() ChatComponent method", () => {
-  let mockUseQuery: jest.Mock;
-  let mockUseMutation: jest.Mock;
-
+describe("ChatComponent", () => {
   beforeEach(() => {
-    mockUseQuery = useQuery as jest.Mock;
-    mockUseMutation = useMutation as jest.Mock;
+    jest.resetAllMocks();
   });
 
   describe("Happy Path", () => {
-    it("should render messages correctly", () => {
-      // Arrange
+    it("renders messages correctly", () => {
       const messages = [
         { _id: "1", content: "Hello", sender: "tenant", timestamp: Date.now() },
         { _id: "2", content: "Hi", sender: "client", timestamp: Date.now() },
       ];
-      mockUseQuery.mockReturnValue(messages);
-      mockUseMutation.mockReturnValue(jest.fn());
 
-      // Act
+      (useQuery as jest.Mock).mockReturnValue(messages);
+
       render(<ChatComponent tenantId="tenant1" clientId="client1" />);
 
-      // Assert
       expect(screen.getByText("Hello")).toBeInTheDocument();
       expect(screen.getByText("Hi")).toBeInTheDocument();
     });
 
-    it("should send a message when the send button is clicked", async () => {
-      // Arrange
+    it("sends a message when the send button is clicked", async () => {
       const sendMessageMock = jest.fn();
-      mockUseQuery.mockReturnValue([]);
-      mockUseMutation.mockReturnValue(sendMessageMock);
 
-      // Act
+      (useQuery as jest.Mock).mockReturnValue([]);
+      (useMutation as jest.Mock).mockReturnValue(sendMessageMock);
+
       render(<ChatComponent tenantId="tenant1" clientId="client1" />);
-      fireEvent.change(screen.getByPlaceholderText("Type your message..."), {
-        target: { value: "Test message" },
-      });
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Type your message..."),
+        {
+          target: { value: "Test message" },
+        }
+      );
       fireEvent.click(screen.getByText("Send"));
 
-      // Assert
-      expect(sendMessageMock).toHaveBeenCalledWith({
-        tenantId: "tenant1",
-        clientId: "client1",
-        content: "Test message",
-        sender: "tenant",
+      await waitFor(() => {
+        expect(sendMessageMock).toHaveBeenCalledWith({
+          tenantId: "tenant1",
+          clientId: "client1",
+          content: "Test message",
+          sender: "tenant",
+        });
       });
     });
   });
 
   describe("Edge Cases", () => {
-    it("should not send a message if the input is empty", async () => {
-      // Arrange
+    it("does not send an empty message", async () => {
       const sendMessageMock = jest.fn();
-      mockUseQuery.mockReturnValue([]);
-      mockUseMutation.mockReturnValue(sendMessageMock);
 
-      // Act
+      (useQuery as jest.Mock).mockReturnValue([]);
+      (useMutation as jest.Mock).mockReturnValue(sendMessageMock);
+
       render(<ChatComponent tenantId="tenant1" clientId="client1" />);
-      fireEvent.change(screen.getByPlaceholderText("Type your message..."), {
-        target: { value: "   " },
-      });
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Type your message..."),
+        {
+          target: { value: "   " },
+        }
+      );
       fireEvent.click(screen.getByText("Send"));
 
-      // Assert
-      expect(sendMessageMock).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(sendMessageMock).not.toHaveBeenCalled();
+      });
     });
 
-    it("should handle no messages gracefully", () => {
-      // Arrange
-      mockUseQuery.mockReturnValue([]);
-      mockUseMutation.mockReturnValue(jest.fn());
+    it("handles no messages gracefully", () => {
+      (useQuery as jest.Mock).mockReturnValue([]);
 
-      // Act
       render(<ChatComponent tenantId="tenant1" clientId="client1" />);
 
-      // Assert
-      expect(
-        screen.getByPlaceholderText("Type your message..."),
-      ).toBeInTheDocument();
+      expect(screen.queryByText("Hello")).not.toBeInTheDocument();
+      expect(screen.queryByText("Hi")).not.toBeInTheDocument();
     });
 
-    it("should scroll to the bottom when new messages arrive", () => {
-      // Arrange
+    it("scrolls to the bottom when new messages arrive", () => {
       const messages = [
         { _id: "1", content: "Hello", sender: "tenant", timestamp: Date.now() },
         { _id: "2", content: "Hi", sender: "client", timestamp: Date.now() },
       ];
-      mockUseQuery.mockReturnValue(messages);
-      mockUseMutation.mockReturnValue(jest.fn());
 
-      // Act
+      (useQuery as jest.Mock).mockReturnValue(messages);
+
       render(<ChatComponent tenantId="tenant1" clientId="client1" />);
+
       const messageList = document.getElementById("message-list");
 
-      // Assert
       expect(messageList?.scrollTop).toBe(messageList?.scrollHeight);
     });
   });
 });
 
-// End of unit tests for: ChatComponent

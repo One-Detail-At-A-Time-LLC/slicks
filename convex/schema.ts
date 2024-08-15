@@ -66,4 +66,17 @@ export default defineSchema({
         sender: v.union(v.literal("tenant"), v.literal("client")),
         timestamp: v.number(),
     }).index("by_tenantId_clientId", ["tenantId", "clientId"]),
+
+    vehicleAssessments: defineTable({
+        clientId: v.id("clients"),
+        vehicleId: v.id("vehicles"),
+        imageStorageId: v.id("_storage"),
+        description: v.string(),
+        condition: v.string(),
+        recommendedServices: v.array(v.string()),
+        embedding: v.array(v.float64()),
+    }).vectorIndex("by_embedding", {
+        vectorField: "embedding",
+        dimensions: 1536,
+    }),
 });

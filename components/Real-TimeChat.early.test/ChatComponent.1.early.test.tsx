@@ -1,10 +1,11 @@
 // Unit tests for: ChatComponent
 
-import { useMutation, useQuery } from "convex/react";
-
+import React from "react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { ChatComponent } from "../Real-TimeChat";
 
-// Mock dependencies
+import { useMutation, useQuery } from "convex/react";
+
 jest.mock("convex/react", () => ({
   useQuery: jest.fn(),
   useMutation: jest.fn(),
@@ -19,7 +20,7 @@ jest.mock("../../convex/_generated/api", () => ({
   },
 }));
 
-describe("ChatComponent() ChatComponent method", () => {
+describe("ChatComponent", () => {
   const tenantId = "tenant123";
   const clientId = "client123";
 
@@ -29,7 +30,6 @@ describe("ChatComponent() ChatComponent method", () => {
 
   describe("Happy Path", () => {
     test("renders messages correctly", () => {
-      // Mock useQuery to return messages
       (useQuery as jest.Mock).mockReturnValue([
         { _id: "1", content: "Hello", sender: "tenant", timestamp: Date.now() },
         { _id: "2", content: "Hi", sender: "client", timestamp: Date.now() },
@@ -138,5 +138,3 @@ describe("ChatComponent() ChatComponent method", () => {
     });
   });
 });
-
-// End of unit tests for: ChatComponent

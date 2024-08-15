@@ -13,13 +13,13 @@ export const schedule = mutation({
         if (!estimate) throw new Error('Estimate not found');
         if (estimate.tenantId !== args.tenantId) throw new Error('Unauthorized');
 
-        const appointment = {
-            estimateId: args.estimateId,
-            startTime: args.startTime,
-            endTime: args.startTime + 2 * 60 * 60 * 1000, // 2 hours duration
-            status: 'scheduled',
-            depositPaid: false,
-        };
+const appointment = {
+  estimateId: args.estimateId,
+  startTime: args.startTime,
+  endTime: args.startTime + 2 * 60 * 60 * 1000, // 2 hours duration
+  status: 'scheduled' as const, // <--- Add this
+  depositPaid: false,
+};
 
         return await ctx.db.insert('appointments', appointment);
     },
