@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 
-const page = () => {
+const TenantPage = ({ tenantId }: { tenantId: string }) => {
   return (
     <div>
-      Welcome To {tenantId}
+      Welcome To Home
     </div>
-  )
-}
+  );
+};
 
-export function page ({ tenantId }: { tenantId: string })
+export default TenantPage;

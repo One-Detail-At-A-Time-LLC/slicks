@@ -79,4 +79,14 @@ export default defineSchema({
         vectorField: "embedding",
         dimensions: 1536,
     }),
+
+    serviceReports: defineTable({
+        clientId: v.id("clients"),
+        vehicleId: v.id("vehicles"),
+        assessmentId: v.id("vehicleAssessments"),
+        reportStorageId: v.id("_storage"),
+        date: v.number(),
+        servicesPerformed: v.array(v.string()),
+        totalCost: v.number(),
+    }),
 });
