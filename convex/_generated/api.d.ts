@@ -16,8 +16,11 @@ import type {
 } from "convex/server";
 import type * as aiAssessment from "../aiAssessment.js";
 import type * as appointment from "../appointment.js";
+import type * as authAware from "../authAware.js";
 import type * as estimate from "../estimate.js";
 import type * as message from "../message.js";
+import type * as onGoingService from "../onGoingService.js";
+import type * as roleBased from "../roleBased.js";
 import type * as tenant from "../tenant.js";
 
 /**
@@ -31,8 +34,11 @@ import type * as tenant from "../tenant.js";
 declare const fullApi: ApiFromModules<{
   aiAssessment: typeof aiAssessment;
   appointment: typeof appointment;
+  authAware: typeof authAware;
   estimate: typeof estimate;
   message: typeof message;
+  onGoingService: typeof onGoingService;
+  roleBased: typeof roleBased;
   tenant: typeof tenant;
 }>;
 export declare const api: FilterApi<

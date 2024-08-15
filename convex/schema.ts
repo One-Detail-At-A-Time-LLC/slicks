@@ -89,4 +89,14 @@ export default defineSchema({
         servicesPerformed: v.array(v.string()),
         totalCost: v.number(),
     }),
+
+    ongoingServices: defineTable({
+        clientId: v.id("clients"),
+        vehicleId: v.id("vehicles"),
+        serviceName: v.string(),
+        status: v.string(),
+        startTime: v.number(),
+        estimatedEndTime: v.number(),
+        assignedStaff: v.string(),
+    }).index("by_status", ["status"]),
 });

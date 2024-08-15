@@ -88,7 +88,7 @@ export function ServiceReport({ clientId, vehicleId, assessmentId }: Readonly<Se
             <ul>
                 {/* List of services performed */}
                 {servicesPerformed.map((service, index) => (
-                    <li key={index}>{service}</li>
+                    <li key={service.Id}>{service}</li>
                 ))}
             </ul>
             {/* Button to generate the service report */}
@@ -105,78 +105,5 @@ export function ServiceReport({ clientId, vehicleId, assessmentId }: Readonly<Se
                 </div>
             )}
         </div>
-    );
-    import React, { useState } from 'react';
-    import { useMutation, useQuery } from 'convex/react';
-    import { api } from '../convex/_generated/api';
-    import { Id } from '../convex/_generated/dataModel';
-
-    interface ServiceReportProps {
-        clientId: Id<"clients">;
-        vehicleId: Id<"vehicles">;
-        assessmentId: Id<"vehicleAssessments">;
-    }
-
-    export function ServiceReport({ clientId, vehicleId, assessmentId }: Readonly<ServiceReportProps>) {
-        const generateReport = useMutation(api.serviceReports.generateServiceReport);
-        const [reportId, setReportId] = useState<Id<"serviceReports"> | null>(null);
-        const report = useQuery(api.serviceReports.getServiceReport, reportId ? { reportId } : "skip");
-        const [servicesPerformed, setServicesPerformed] = useState<string[]>([]);
-        const [totalCost, setTotalCost] = useState<number>(0);
-
-        const handleGenerateReport = async () => {
-            const newReportId = await generateReport({
-                clientId,
-                vehicleId,
-                assessmentId,
-                servicesPerformed,
-                totalCost,
-            });
-            setReportId(newReportId);
-        };
-
-        const handleAddService = (service: string) => {
-            setServicesPerformed([...servicesPerformed, service]);
-        };
-
-        return (
-            <div className="service-report">
-                <h2>Service Report</h2>
-                <div className="service-input">
-                    <input
-                        type="text"
-                        placeholder="Add service"
-                        onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                                handleAddService(e.currentTarget.value);
-                                e.currentTarget.value = '';
-                            }
-                        }}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Total cost"
-                        value={totalCost}
-                        onChange={(e) => setTotalCost(parseFloat(e.target.value))}
-                    />
-                </div>
-                <ul>
-                    {servicesPerformed.map((service, index) => (
-                        <li key={Service.Id}>{service}</li>
-                    ))}
-                </ul>
-                <button onClick={handleGenerateReport}>Generate Report</button>
-                {report && (
-                    <div className="report-result">
-                        <h3>Generated Report</h3>
-                        <p>Date: {new Date(report.date).toLocaleDateString()}</p>
-                        <p>Total Cost: ${report.totalCost.toFixed(2)}</p>
-                        <a href={report.reportUrl} target="_blank" rel="noopener noreferrer">
-                            View Full Report (PDF)
-                        </a>
-                    </div>
-                )}
-            </div>
-        );
-    }
+    )
 }
