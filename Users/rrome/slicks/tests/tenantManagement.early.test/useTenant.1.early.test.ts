@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 
 import { useMutation, useQuery } from "convex/react";
 
-import { useTenant } from "../tenantManagement";
+import { useTenant } from "../../hooks/tenantManagement";
 
 jest.mock("@clerk/nextjs", () => ({
   useUser: jest.fn(),
@@ -31,10 +31,10 @@ describe("useTenant() useTenant method", () => {
   });
 
   describe("Happy Path", () => {
-    it("should fetch and set existing tenant if user exists", async () => {
+    it("should fetch and set an existing tenant if user exists", async () => {
       // Arrange
       const existingTenant = {
-        _id: { table: "tenants", id: "tenant123" },
+        _id: { tableName: "tenants", id: "tenant123" },
         name: "John's Auto Detailing",
         ownerId: "user123",
         pricingStructure: [],
@@ -53,10 +53,10 @@ describe("useTenant() useTenant method", () => {
       expect(mockGetTenant).toHaveBeenCalledWith("user123");
     });
 
-    it("should create and set new tenant if no existing tenant is found", async () => {
+    it("should create and set a new tenant if no existing tenant is found", async () => {
       // Arrange
       const newTenant = {
-        _id: { table: "tenants", id: "tenant123" },
+        _id: { tableName: "tenants", id: "tenant123" },
         name: "John's Auto Detailing",
         ownerId: "user123",
         pricingStructure: [],
@@ -86,7 +86,7 @@ describe("useTenant() useTenant method", () => {
   });
 
   describe("Edge Cases", () => {
-    it("should return null if user is not available", () => {
+    it("should return null if no user is logged in", () => {
       // Arrange
       (useUser as jest.Mock).mockReturnValue({ user: null });
 
@@ -99,7 +99,7 @@ describe("useTenant() useTenant method", () => {
       expect(mockCreateTenant).not.toHaveBeenCalled();
     });
 
-    it("should handle errors gracefully when fetching tenant", async () => {
+    it("should handle errors when fetching an existing tenant", async () => {
       // Arrange
       mockGetTenant.mockRejectedValue(new Error("Failed to fetch tenant"));
 
@@ -112,7 +112,7 @@ describe("useTenant() useTenant method", () => {
       expect(mockGetTenant).toHaveBeenCalledWith("user123");
     });
 
-    it("should handle errors gracefully when creating tenant", async () => {
+    it("should handle errors when creating a new tenant", async () => {
       // Arrange
       mockGetTenant.mockResolvedValue(null);
       mockCreateTenant.mockRejectedValue(new Error("Failed to create tenant"));
