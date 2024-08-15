@@ -10,7 +10,6 @@ const jestConfig: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   coverageProvider: 'v8',
-  testEnvironment: 'jsdom',
   testMatch: ['**/?(*.)+(spec|test).ts?(x)'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts'],
   coveragePathIgnorePatterns: ['/node_modules/'],
